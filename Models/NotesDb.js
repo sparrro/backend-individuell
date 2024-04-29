@@ -1,5 +1,6 @@
 const Datastore = require("nedb-promise");
-const uuid = require("uuid-random")
+const uuid = require("uuid-random");
+const {findById} = require("./UsersDb")
 
 const notesDb = new Datastore({
     filename: "./Databases/notes.db",
@@ -20,4 +21,12 @@ const addNote = async (title, text, user) => {
     await notesDb.insert(note)
 }
 
-module.exports = {addNote}
+const deleteNote = async (id) => {
+    await notesDb.remove({id: id}, {})
+}
+
+const findNote = async (noteId) => {
+    return await notesDb.findOne({id: noteId})
+}
+
+module.exports = {addNote, deleteNote, findNote}

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const {addNote} = require("../Models/NotesDb");
-const {authenticate} = require("../Middlewares/authentication")
+const {addNote, deleteNote, findNote} = require("../Models/NotesDb");
+const {authenticate} = require("../Utils/authentication")
 const {findById} = require("../Models/UsersDb")
 
 
@@ -15,22 +15,40 @@ router.get("/", authenticate, async (req, res) => {
 
 });
 
-// POST för att spara en anteckning
+// POST för att spara en anteckning --VERKAR FUNKA
 router.post("/", authenticate, async (req, res) => {
     const userId = req.user.id;
     const {title, text} = req.body;
-    await addNote(title, text, userId);
-    res.status(200).json({message: "Note added"})
+    try {
+        await addNote(title, text, userId);
+        return res.status(200).json({message: "Note added"})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to add note", error: error})
+    }
 });
 
-// PUT för att ändra en anteckning
+// PUT för att ändra en anteckning --EJ PÅBÖRJAD
 router.put("/", authenticate, async (req, res) => {
 
 });
 
-// DELETE för att radera en anteckning
-router.delete("/", authenticate, async (req, res) => {
+// DELETE för att radera en anteckning --VERKAR FUNKA
+router.delete("/:noteId", authenticate, async (req, res) => {
+    const user = req.user.id;
+    const noteId = req.params.noteId;
+    const note = await findNote(noteId)
 
+    if (user != note.user) {
+        return res.status(403).json({message: "That's not your note mf"})
+    }
+    
+    try {
+        deleteNote(noteId);
+        return res.status(200).json({message: "Note deleted"})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to delete note", error: error})
+    }
+    
 });
 
 module.exports = router
