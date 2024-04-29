@@ -19,5 +19,9 @@ const findByUsername = async (username) => {
     return await usersDb.findOne({username:username})
 }
 
+const findById = async (id) => {
+    return await usersDb.findOne({id: id})
+}
 
-module.exports = {saveUser, findByUsername}
+
+module.exports = {saveUser, findByUsername, findById}
