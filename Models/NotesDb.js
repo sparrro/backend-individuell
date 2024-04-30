@@ -1,6 +1,6 @@
 const Datastore = require("nedb-promise");
 const uuid = require("uuid-random");
-const {findById} = require("./UsersDb")
+const {format} = require("date-fns")
 
 const notesDb = new Datastore({
     filename: "./Databases/notes.db",
@@ -9,7 +9,7 @@ const notesDb = new Datastore({
 
 const addNote = async (title, text, user) => {
     
-    const currentTime = new Date();
+    const currentTime = format(new Date(), "yyyy-MM-dd HH:mm");
     const note = {
         title: title,
         text: text,
@@ -29,4 +29,19 @@ const findNote = async (noteId) => {
     return await notesDb.findOne({id: noteId})
 }
 
-module.exports = {addNote, deleteNote, findNote}
+const changeNote = async (noteId, changeData) => {
+    const currentTime = format(new Date(), "yyyy-MM-dd HH:mm");
+    if (changeData.title && changeData.text) {
+        await notesDb.update({id: noteId}, {$set: {title: changeData.title, text: changeData.text, modifiedAt: currentTime}}, {})
+    } else if (changeData.title) {
+        await notesDb.update({id: noteId}, {$set: {title: changeData.title, modifiedAt: currentTime}}, {})
+    } else if (changeData.text) {
+        await notesDb.update({id: noteId}, {$set: {text: changeData.text, modifiedAt: currentTime}}, {})
+    }
+}
+
+const findNotes = async (userId) => {
+    return await notesDb.find({user: userId})
+}
+
+module.exports = {addNote, deleteNote, findNote, changeNote, findNotes}

@@ -18,7 +18,7 @@ router.post("/signup", async (req, res) => {
 
     // se om användarnamnet redan finns i databasen
     if (await findByUsername(username)) {
-        return res.status(403).json({message:"Username already exists"})
+        return res.status(403).json({message:"Username already in use"})
     }
 
     // kryptera lösenordet
@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
 
         saveUser(username, encryptedPassword, email)
 
-        return res.status(200).json({ message: "user created" })
+        return res.status(200).json({ message: "User created" })
 
     } catch (error) {
         return res.status(500).json({ message: "Failed to create account", error: error })
@@ -61,7 +61,7 @@ router.post("/login", async (req, res) => {
             return res.status(200).json({message: "Logged in succesfully", token: token})
 
         } catch (error) {
-            return res.status(500).json({message: "Failed to log in"})
+            return res.status(500).json({message: "Failed to log in", error: error})
         }
     } else {
         return res.status(403).json({message: "Incorrect login credentials"})

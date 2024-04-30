@@ -1,17 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const {addNote, deleteNote, findNote} = require("../Models/NotesDb");
+const {addNote, deleteNote, findNote, changeNote, findNotes} = require("../Models/NotesDb");
 const {authenticate} = require("../Utils/authentication")
-const {findById} = require("../Models/UsersDb")
 
 
-// GET för att hämta anteckningar --EJ FÄRDIG
+// GET för att hämta anteckningar --VERKAR FUNKA
 router.get("/", authenticate, async (req, res) => {
     
-    console.log(req.user)
-    const user = await findById(req.user.id);
-    console.log(user)
-    return res.status(200).json({message: "sluta tugga"})
+    const userId = req.user.id;
+
+    try {
+        const userNotes = await findNotes(userId);
+        return res.status(200).json({message: "Notes succesfully got", notes: userNotes})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to get notes", error: error})
+    }
 
 });
 
@@ -27,8 +30,39 @@ router.post("/", authenticate, async (req, res) => {
     }
 });
 
-// PUT för att ändra en anteckning --EJ PÅBÖRJAD
-router.put("/", authenticate, async (req, res) => {
+// PUT för att ändra en anteckning --VERKAR FUNKA
+router.put("/:noteId", authenticate, async (req, res) => {
+
+    const user = req.user.id;
+
+    //hämta den nya datan från body
+    const {title, text} = req.body
+
+    if (!title && !text) {
+        return res.status(406).json({message: "No updated data provided"})
+    }
+
+    //hämta rätt anteckning med id från params; ge fel om anteckningen inte finns
+    const noteId = req.params.noteId;
+    const note = await findNote(noteId);
+
+    if (!note) {
+        return res.status(404).json({message: "Note not found"})
+    }
+
+    //dubbelkolla att anteckningen tillhör den inloggade användaren
+    if (user != note.user) {
+        return res.status(403).json({message: "That's not your note mf"})
+    }
+
+    //ändra anteckningen med nya datan
+    try {
+        const changeData = {title: title, text: text};
+        await changeNote(noteId, changeData);
+        return res.status(200).json({message: "Note updated"})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to update note", error: error})
+    }
 
 });
 
