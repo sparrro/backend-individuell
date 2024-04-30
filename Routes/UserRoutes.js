@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const {saveUser, findByUsername} = require("../Models/UsersDb")
 const jwt = require("jsonwebtoken");
-const { hashPassword, comparePassword } = require("../Utils/bcryptUtils")
+const { hashPassword, comparePassword } = require("../Utils/bcryptUtils");
+const validator = require("email-validator")
 
 router.get("/", (req, res) => {
     res.status(200).json({ message:"test(ikel)" })
@@ -14,6 +15,14 @@ router.post("/signup", async (req, res) => {
 
     if (!username || !password || !email) {
         return res.status(406).json({ message:"All fields must be filled in" })
+    }
+
+    if (username.length > 10) {
+        return res.status(406).json({message: "Username cannot exceed ten characters"})
+    }
+
+    if (!validator.validate(email)) {
+        return res.status(406).json({message: "Invalid email"})
     }
 
     // se om användarnamnet redan finns i databasen

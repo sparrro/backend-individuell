@@ -22,6 +22,15 @@ router.get("/", authenticate, async (req, res) => {
 router.post("/", authenticate, async (req, res) => {
     const userId = req.user.id;
     const {title, text} = req.body;
+
+    if (title.length > 20) {
+        return res.status(406).json({message: "Title cannot exceed 20 characters"})
+    }
+
+    if (text.lengt > 100) {
+        return res.status(406).json({message: "Text cannot exceed 100 characters"})
+    }
+
     try {
         await addNote(title, text, userId);
         return res.status(200).json({message: "Note added"})
