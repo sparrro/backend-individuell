@@ -1,9 +1,16 @@
 {
-  "openapi": "3.0.0",
+  "swagger":"2.0",
   "info": {
     "title": "Swingnotes",
     "version": "1.0.0",
     "description": "An api for Swingnotes"
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
+    }
   },
   "paths": {
     "/user/signup": {
@@ -88,7 +95,7 @@
         "description": "Retrieve all notes associated with the authenticated user.",
         "security": [
           {
-            "bearerAuth": []
+            "JWT": []
           }
         ],
         "responses": {
@@ -105,7 +112,7 @@
         "description": "Create a new note with the provided title and text.",
         "security": [
           {
-            "bearerAuth": []
+            "JWT": []
           }
         ],
         "requestBody": {
@@ -145,7 +152,7 @@
         "description": "Update the title or text of a note.",
         "security": [
           {
-            "bearerAuth": []
+            "JWT": []
           }
         ],
         "parameters": [
@@ -197,7 +204,7 @@
         "description": "Delete a note by its ID.",
         "security": [
           {
-            "bearerAuth": []
+            "JWT": []
           }
         ],
         "parameters": [
