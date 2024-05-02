@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const { hashPassword, comparePassword } = require("../Utils/bcryptUtils");
 const validator = require("email-validator")
 
+const JWT_SECRET = process.env.JWT_SECRET || "1234"
+
 router.post("/signup", async (req, res) => {
 
     const { username, password, email } = req.body;
@@ -58,7 +60,7 @@ router.post("/login", async (req, res) => {
     if (passwordMatches) {
         try {
 
-            const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {
+            const token = jwt.sign({id: user.id}, JWT_SECRET, {
                 expiresIn: "30min"
             })
 
