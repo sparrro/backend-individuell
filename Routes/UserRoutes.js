@@ -5,27 +5,6 @@ const jwt = require("jsonwebtoken");
 const { hashPassword, comparePassword } = require("../Utils/bcryptUtils");
 const validator = require("email-validator")
 
-
-/**
- * @swagger
- * /:
- *  get:
- *      summary: Test call that writes out "test(ikel)"
- *      description: See above
- *      responses:
- *          '200':
- *              description: the text "test(ikel)"
- *              application/json:
- *                  schema:
- *                      type: object
- *                      properties:
- *                          message:
- *                              type: string
- */
-router.get("/", (req, res) => {
-    res.status(200).json({ message:"test(ikel)" })
-});
-
 router.post("/signup", async (req, res) => {
 
     const { username, password, email } = req.body;
@@ -68,7 +47,6 @@ router.post("/login", async (req, res) => {
 
     //hitta användaren efter användarnamnet i databasen
     const user = await findByUsername(username);
-    console.log(user)
 
     //kolla att lösenordet stämmer
     let passwordMatches = false
